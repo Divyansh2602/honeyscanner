@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 import json
 from pathlib import Path
@@ -113,7 +114,13 @@ class ReportGenerator:
             filename = f"{filename}.json"
 
         filepath: Path = target_dir / filename
+        report_to_save = copy.deepcopy(report_dict)
+        if "metadata" in report_to_save and isinstance(
+            report_to_save["metadata"], dict
+        ):
+            report_to_save["metadata"]["filename"] = filename
+
         with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(report_dict, f, indent=4)
+            json.dump(report_to_save, f, indent=4, ensure_ascii=False)
 
         return filepath

@@ -16,36 +16,44 @@ class MockHoneypot:
 def test_generate_report_dict() -> None:
     honeypot: Any = MockHoneypot()
     generator = ReportGenerator(honeypot)
-    recommendations = ["Update SSH credentials", "Disable root login"]
-    passive_results = "Cowrie honeypot detected on port 22."
-    active_results = ("DoS attack completed.", 0, 0)
+    recs = ["Update SSH credentials", "Disable root login"]
+    passive = "Cowrie honeypot detected on port 22."
+    active = ("DoS attack completed.", 0, 0)
 
-    report = generator.generate(recommendations, passive_results, active_results)
+    report = generator.generate(recs, passive, active)
 
     assert "metadata" in report
     assert "results" in report
     assert "recommendations" in report
     assert report["metadata"]["honeypot"]["name"] == "cowrie"
     assert report["metadata"]["honeypot"]["ip"] == "127.0.0.1"
-    assert report["recommendations"] == recommendations
+    assert report["recommendations"] == recs
 
 
 def test_save_json_report(tmp_path: Path) -> None:
     honeypot: Any = MockHoneypot()
     generator = ReportGenerator(honeypot)
-    recommendations = ["Recommendation 1"]
-    passive_results = "Passive scan ok"
-    active_results = ("Active scan ok", 0, 0)
+    recs = ["Recommendation 1: Use UTF-8 — ✓"]
+    passive = "Passive scan ok"
+    active = ("Active scan ok", 0, 0)
 
-    report = generator.generate(recommendations, passive_results, active_results)
+    report = generator.generate(recs, passive, active)
+    original_filename = report["metadata"]["filename"]
+    assert original_filename.endswith(".txt")
+
     json_path = generator.save_json(report, output_dir=tmp_path)
 
     assert json_path.exists()
     assert json_path.suffix == ".json"
 
+    # Verify caller's dict was not mutated
+    assert report["metadata"]["filename"] == original_filename
+
     with open(json_path, "r", encoding="utf-8") as f:
         loaded_report = json.load(f)
 
+    # Verify saved metadata filename matches JSON file name
+    assert loaded_report["metadata"]["filename"] == json_path.name
     assert loaded_report["metadata"]["honeypot"]["name"] == "cowrie"
     assert loaded_report["results"]["passive"] == "Passive scan ok"
-    assert loaded_report["recommendations"] == ["Recommendation 1"]
+    assert loaded_report["recommendations"] == recs
