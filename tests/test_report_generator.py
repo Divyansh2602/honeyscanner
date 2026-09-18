@@ -54,6 +54,7 @@ def test_save_json_report(tmp_path: Path) -> None:
 
     # Verify saved metadata filename matches JSON file name
     assert loaded_report["metadata"]["filename"] == json_path.name
+    assert loaded_report["metadata"]["filename"].endswith(".json")
     assert loaded_report["metadata"]["honeypot"]["name"] == "cowrie"
     assert loaded_report["results"]["passive"] == "Passive scan ok"
     assert loaded_report["recommendations"] == recs
