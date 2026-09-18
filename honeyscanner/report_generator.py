@@ -33,6 +33,8 @@ class ReportGenerator:
             int: The number of unique CVEs.
         """
         path_to_all_cves: Path = self.parent_path / "results" / "all_cves.txt"
+        if not path_to_all_cves.exists():
+            return 0
         lines_seen: set[str] = set()
         unique_lines: list[str] = []
         with open(path_to_all_cves, "r") as f:
@@ -92,19 +94,20 @@ class ReportGenerator:
         Save the generated report dictionary as a JSON file.
 
         Args:
-            report_dict (dict): The report dictionary returned by generate().
+            report_dict (dict): The report dict returned by generate().
             output_dir (Path | None): Optional directory path to save to.
                 Defaults to self.parent_path ("<temp>/honeyscanner").
 
         Returns:
             Path: The path to the saved JSON file.
         """
-        target_dir = output_dir if output_dir is not None else self.parent_path
+        target_dir = (
+            output_dir if output_dir is not None else self.parent_path
+        )
         target_dir.mkdir(parents=True, exist_ok=True)
 
-        raw_filename = report_dict.get(
-            "metadata", {}
-        ).get("filename", "report.json")
+        meta = report_dict.get("metadata", {})
+        raw_filename = meta.get("filename", "report.json")
         filename = str(raw_filename)
         if filename.endswith(".txt"):
             filename = filename[:-4] + ".json"

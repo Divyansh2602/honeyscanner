@@ -21,7 +21,7 @@ def sanitize_string(s: str) -> str:
     """
     s = s.strip()
     s = s.lower()
-    s = re.sub(r'[^a-z0-9._\- ]', '', s)
+    s = re.sub(r"[^a-z0-9._\- ]", "", s)
     return s
 
 
@@ -74,7 +74,7 @@ def parse_arguments() -> argparse.Namespace:
 def run_honeyscanner(
     target_ip: str,
     username: str = "",
-    password: str = "",
+    password: str = "",  # nosec B107
     report_format: str = "stdout",
     output_dir: str = "",
 ) -> dict:
@@ -153,4 +153,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main()
