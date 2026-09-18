@@ -101,9 +101,7 @@ class ReportGenerator:
         Returns:
             Path: The path to the saved JSON file.
         """
-        target_dir = (
-            output_dir if output_dir is not None else self.parent_path
-        )
+        target_dir = output_dir if output_dir is not None else self.parent_path
         target_dir.mkdir(parents=True, exist_ok=True)
 
         meta = report_dict.get("metadata", {})

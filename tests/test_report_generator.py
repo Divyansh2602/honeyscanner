@@ -20,9 +20,7 @@ def test_generate_report_dict() -> None:
     passive_results = "Cowrie honeypot detected on port 22."
     active_results = ("DoS attack completed.", 0, 0)
 
-    report = generator.generate(
-        recommendations, passive_results, active_results
-    )
+    report = generator.generate(recommendations, passive_results, active_results)
 
     assert "metadata" in report
     assert "results" in report
@@ -39,9 +37,7 @@ def test_save_json_report(tmp_path: Path) -> None:
     passive_results = "Passive scan ok"
     active_results = ("Active scan ok", 0, 0)
 
-    report = generator.generate(
-        recommendations, passive_results, active_results
-    )
+    report = generator.generate(recommendations, passive_results, active_results)
     json_path = generator.save_json(report, output_dir=tmp_path)
 
     assert json_path.exists()
